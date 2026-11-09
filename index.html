@@ -11,27 +11,24 @@
     <script src="assets/js/app.js" defer></script>
   </head>
   <body>
+    <button class="pdf-button" id="download-pdf" type="button" aria-label="Exportar apresentação para PDF">
+      <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false"><path d="M12 3v11m0 0 4-4m-4 4-4-4M5 17v3h14v-3" /></svg>
+      <span>Baixar PDF</span>
+    </button>
+
     <main class="deck" aria-label="Apresentação do Torneio de Truco AV 2026">
       <section class="slide cover active" aria-labelledby="cover-title">
-        <div class="eyebrow">Associação Volvo apresenta</div>
         <h1 id="cover-title">TORNEIO DE<br><span>TRUCO</span> AV 2026</h1>
-        <p class="subtitle">CLASSIFICAÇÃO FINAL</p>
-        <div class="stats" aria-label="Resumo do torneio">
-          <div class="stat"><strong>10</strong><span>etapas realizadas</span></div>
-          <div class="stat"><strong>90</strong><span>participantes</span></div>
-          <div class="stat"><strong>49</strong><span>posições classificadas</span></div>
-        </div>
-        <div class="brand">ASSOCIAÇÃO VOLVO<small>LAZER • BEM-ESTAR • QUALIDADE DE VIDA</small></div>
       </section>
 
-      <section class="slide" aria-labelledby="podium-title" hidden>
+      <section class="slide podium-slide" aria-labelledby="podium-title" hidden>
         <div class="eyebrow">Ranking de Truco AV 2026</div>
-        <h2 id="podium-title">As 3 primeiras posições</h2>
+        <h2 id="podium-title">Destaque das Primeiras Colocações</h2>
         <div class="podium" id="podium" aria-label="Pódio"></div>
         <div class="footer"><span>TORNEIO DE TRUCO AV 2026</span><span>02 / 04</span></div>
       </section>
 
-      <section class="slide" aria-labelledby="highlights-title" hidden>
+      <section class="slide highlights-slide" aria-labelledby="highlights-title" hidden>
         <div class="eyebrow">Destaques da temporada</div>
         <h2 id="highlights-title">Participantes premiados • 1º ao 6º lugar</h2>
         <div class="six-grid" id="highlights"></div>

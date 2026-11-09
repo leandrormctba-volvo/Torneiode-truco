@@ -48,12 +48,9 @@ window.TOURNAMENT_RANKING = Object.freeze([
   { position: 46, name: "Mauricio da Silva", points: 13 },
   { position: 47, name: "Cézar (cezinha) / Jeferson Almeida", points: 12 },
   { position: 48, name: "Diogo dos Santos / Nilton Junior (Jota)", points: 11 },
-  { position: 49, name: "Edson Muller / André / Gabriel Henrique / Jonathan Arte / Vagner Ferreira", points: 10 }
-]);
-
-window.TOURNAMENT_OTHER_SCORES = Object.freeze([
-  { name: "Ocimar José Prestes / Rudi Pereira", points: 8 },
-  { name: "Max / Matheus Z.", points: 6 },
-  { name: "Eduardo Rondorf / Roberson Santiago", points: 5 },
-  { name: "Edsonilson / Eduardo Matucheski Filho / Enzo Camargo Teuber / João Pedro / Rafael Ferreira / Rodrigo Boaron / Sara / Thiago Cancelier / Wagner Domingues Ferreira / Weliton / Wesley", points: 4 }
+  { position: 49, name: "Edson Muller / André / Gabriel Henrique / Jonathan Arte / Vagner Ferreira", points: 10 },
+  { position: 50, name: "Simar Prestes e Ruge Pereira", points: 8 },
+  { position: 51, name: "Max e Mateus Z.", points: 6 },
+  { position: 52, name: "Eduardo Rondorf e Robertson Santiago", points: 5 },
+  { position: 53, name: "Edson, Nilson, Eduardo, Enzo, João Pedro, Rafael, Rodrigo, Sara, Thiago, Wagner Ferreira, Eliton e Wesley", points: 4 }
 ]);

@@ -13,7 +13,7 @@
 
     ranking.slice(0, 3).forEach((entry, index) => {
       const card = document.createElement("article");
-      card.className = `card${index === 0 ? " first" : ""}`;
+      card.className = `card place-${entry.position}${index === 0 ? " first" : ""}`;
 
       const medal = document.createElement("div");
       medal.className = "medal";
@@ -22,7 +22,7 @@
 
       const rank = document.createElement("div");
       rank.className = "rank";
-      rank.textContent = `${positionLabel(entry.position)} lugar`;
+      rank.textContent = `${positionLabel(entry.position)} Lugar`;
 
       const name = document.createElement("div");
       name.className = "name";
@@ -58,14 +58,14 @@
     });
   }
 
-  function createRankingTable(entries, firstPosition, lastPosition) {
+  function createRankingTable(entries) {
     const table = document.createElement("table");
     table.className = "rank-table";
-    table.setAttribute("aria-label", `Posições ${firstPosition} a ${lastPosition}`);
+    table.setAttribute("aria-label", `Posições ${entries[0].position} a ${entries[entries.length - 1].position}`);
 
     const thead = document.createElement("thead");
     const headingRow = document.createElement("tr");
-    ["Pos.", "Nome", "Pts."].forEach((label) => {
+    ["Pos.", "Participantes", "Pontos"].forEach((label) => {
       const heading = document.createElement("th");
       heading.scope = "col";
       heading.textContent = label;
@@ -76,7 +76,7 @@
     const tbody = document.createElement("tbody");
     entries.forEach((entry) => {
       const row = document.createElement("tr");
-      [positionLabel(entry.position), entry.name, String(entry.points)].forEach((value) => {
+      [positionLabel(entry.position), entry.name, `${entry.points} pontos`].forEach((value) => {
         const cell = document.createElement("td");
         cell.textContent = value;
         row.append(cell);
@@ -90,32 +90,13 @@
 
   function renderRanking() {
     const columns = document.getElementById("columns");
-    const groupSize = 17;
+    const groupSize = Math.ceil(ranking.length / 3);
 
     for (let start = 0; start < ranking.length; start += groupSize) {
       const entries = ranking.slice(start, start + groupSize);
       const wrapper = document.createElement("div");
       wrapper.className = "ranking-column";
-      wrapper.append(createRankingTable(
-        entries,
-        entries[0].position,
-        entries[entries.length - 1].position
-      ));
-
-      if (start + groupSize >= ranking.length) {
-        const extra = document.createElement("div");
-        extra.className = "unranked";
-        const heading = document.createElement("strong");
-        heading.textContent = "Demais pontuações exibidas";
-        extra.append(heading);
-
-        window.TOURNAMENT_OTHER_SCORES.forEach((entry) => {
-          const line = document.createElement("p");
-          line.textContent = `${entry.name} — ${entry.points} pts.`;
-          extra.append(line);
-        });
-        wrapper.append(extra);
-      }
+      wrapper.append(createRankingTable(entries));
       columns.append(wrapper);
     }
   }
@@ -133,11 +114,10 @@
 
   document.getElementById("previous").addEventListener("click", () => show(current - 1));
   document.getElementById("next").addEventListener("click", () => show(current + 1));
+  document.getElementById("download-pdf").addEventListener("click", () => window.print());
 
   document.addEventListener("touchstart", (event) => {
-    if (event.touches.length !== 1) return;
-    const target = event.target;
-    if (target.closest("button, a, .controls")) return;
+    if (event.touches.length !== 1 || event.target.closest("button, a, .controls, .pdf-button")) return;
     touchStart = { x: event.touches[0].clientX, y: event.touches[0].clientY };
   }, { passive: true });
 
