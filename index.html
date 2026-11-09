@@ -1,297 +1,56 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Torneio de Truco AV 2026</title>
-<style>
-  :root {
-    --navy: #031a30;
-    --blue: #082b4a;
-    --line: #17618a;
-    --gold: #f3c94f;
-    --white: #f7f8fb;
-    --muted: #b7c8d8;
-  }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    background: #020d18;
-    color: var(--white);
-    font-family: Arial, Helvetica, sans-serif;
-    overflow: hidden;
-  }
-  .deck { width: 100vw; height: 100vh; display: grid; place-items: center; }
-  .slide {
-    display: none;
-    position: relative;
-    width: min(100vw, 177.78vh);
-    height: min(56.25vw, 100vh);
-    padding: 4.2% 5%;
-    overflow: hidden;
-    background:
-      radial-gradient(ellipse at 50% 110%, #10517b 0, transparent 48%),
-      linear-gradient(140deg, #041426, #052746 60%, #031321);
-    border: 1px solid #185177;
-  }
-  .slide.active { display: flex; flex-direction: column; animation: appear .5s ease both; }
-  @keyframes appear {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .eyebrow {
-    color: var(--gold); text-transform: uppercase; letter-spacing: .18em;
-    font-weight: 700; font-size: clamp(12px, 1.2vw, 20px);
-  }
-  h1, h2, p { margin-top: 0; }
-  h1 { font-size: clamp(40px, 7vw, 104px); line-height: .96; margin: 2.5vh 0 1.5vh; }
-  h2 { font-size: clamp(26px, 3.2vw, 48px); margin: 0 0 2.3vh; }
-  .subtitle { color: var(--muted); font-size: clamp(16px, 1.6vw, 24px); letter-spacing: .12em; }
-  .brand {
-    display: inline-flex; flex-direction: column; gap: 4px; margin-top: auto;
-    border-left: 3px solid var(--gold); padding-left: 14px;
-    font-weight: 700; letter-spacing: .14em;
-  }
-  .brand small { color: var(--muted); font-size: .68em; font-weight: 400; }
-  .cover { justify-content: center; }
-  .cover::after {
-    content: "♠"; position: absolute; right: 8%; bottom: -14%;
-    font-size: 34vw; color: #ffffff08; transform: rotate(-15deg);
-  }
-  .cover h1 span { color: var(--gold); }
-  .stats { display: flex; gap: 3vw; margin-top: 5vh; }
-  .stat { border-left: 1px solid var(--line); padding-left: 1.2vw; }
-  .stat strong { display: block; color: var(--gold); font-size: clamp(28px, 3vw, 44px); }
-  .stat span { color: var(--muted); text-transform: uppercase; font-size: clamp(10px, 1vw, 15px); }
-  .podium { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2%; align-items: end; flex: 1; }
-  .card {
-    min-height: 53%; border: 1px solid var(--line); border-radius: 16px;
-    background: linear-gradient(160deg, #0b3152, #04182a);
-    padding: 2.2vw 1.5vw; text-align: center;
-    display: flex; flex-direction: column; justify-content: center;
-    box-shadow: 0 12px 35px #0005;
-  }
-  .card.first { min-height: 66%; border-color: var(--gold); background: linear-gradient(160deg,#584719,#132942 75%); }
-  .medal { font-size: clamp(42px, 6vw, 84px); line-height: 1; margin-bottom: 1vh; }
-  .rank { font-size: clamp(22px, 2.6vw, 38px); font-weight: 800; }
-  .name { font-size: clamp(16px, 1.55vw, 23px); font-weight: 700; margin: 1.4vh 0; }
-  .points { color: var(--gold); font-size: clamp(17px, 1.7vw, 25px); font-weight: 800; }
-  .six-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2vw; flex: 1; }
-  .six-card {
-    border: 1px solid var(--line); border-radius: 12px; padding: 1.3vw;
-    background: linear-gradient(145deg, #0b3152, #04182a);
-    display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 1vw;
-  }
-  .six-card:nth-child(-n+3) { border-color: #b69135; }
-  .six-num { font-size: clamp(28px, 3.5vw, 52px); color: var(--gold); font-weight: 800; }
-  .six-card .name { margin: 0 0 .7vh; font-size: clamp(13px, 1.3vw, 19px); }
-  .six-card .points { font-size: clamp(13px, 1.2vw, 18px); }
-  .ranking-slide { padding-top: 2.8%; padding-bottom: 4.5%; }
-  .ranking-slide h2 { text-align: center; margin-bottom: 1.2vh; }
-  .columns { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.1%; flex: 1; min-height: 0; }
-  .rank-table { width: 100%; border-collapse: collapse; table-layout: fixed; align-self: stretch; }
-  .rank-table th, .rank-table td {
-    border: 1px solid #1b5276; padding: .36vh .42vw;
-    font-size: clamp(8px, .75vw, 11px); line-height: 1.13;
-    overflow-wrap: anywhere;
-  }
-  .rank-table th { background: #0b3152; color: var(--gold); text-transform: uppercase; letter-spacing: .04em; }
-  .rank-table td:first-child, .rank-table th:first-child { width: 12%; text-align: center; }
-  .rank-table td:last-child, .rank-table th:last-child { width: 15%; text-align: center; font-weight: 700; }
-  .rank-table tr:nth-child(even) td { background: #ffffff08; }
-  .unranked { color: var(--muted); font-size: clamp(8px, .7vw, 10px); margin-top: .7vh; }
-  .footer {
-    position: absolute; bottom: 1.3%; left: 5%; right: 5%;
-    display: flex; justify-content: space-between; color: #b7c8d8;
-    font-size: clamp(9px, .8vw, 12px); letter-spacing: .1em;
-  }
-  .controls {
-    position: fixed; bottom: 14px; right: 18px; z-index: 5; display: flex; gap: 8px;
-  }
-  button {
-    background: #0b3152; color: white; border: 1px solid #39749a;
-    border-radius: 20px; padding: 8px 14px; cursor: pointer;
-  }
-  button:hover { background: #174a70; }
-  .counter { position: fixed; bottom: 21px; left: 18px; z-index: 5; color: #a9bdcd; font-size: 13px; }
-  @media (max-aspect-ratio: 4/3) {
-    .slide { width: 100vw; height: 56.25vw; }
-  }
-</style>
-</head>
-<body>
-<div class="deck">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#020d18">
+    <meta name="description" content="Classificação final do Torneio de Truco da Associação Volvo 2026.">
+    <title>Torneio de Truco AV 2026</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <script src="assets/js/ranking-data.js" defer></script>
+    <script src="assets/js/app.js" defer></script>
+  </head>
+  <body>
+    <main class="deck" aria-label="Apresentação do Torneio de Truco AV 2026">
+      <section class="slide cover active" aria-labelledby="cover-title">
+        <div class="eyebrow">Associação Volvo apresenta</div>
+        <h1 id="cover-title">TORNEIO DE<br><span>TRUCO</span> AV 2026</h1>
+        <p class="subtitle">CLASSIFICAÇÃO FINAL</p>
+        <div class="stats" aria-label="Resumo do torneio">
+          <div class="stat"><strong>10</strong><span>etapas realizadas</span></div>
+          <div class="stat"><strong>90</strong><span>participantes</span></div>
+          <div class="stat"><strong>49</strong><span>posições classificadas</span></div>
+        </div>
+        <div class="brand">ASSOCIAÇÃO VOLVO<small>LAZER • BEM-ESTAR • QUALIDADE DE VIDA</small></div>
+      </section>
 
-  <section class="slide active cover">
-    <div class="eyebrow">Associação Volvo apresenta</div>
-    <h1>TORNEIO DE<br><span>TRUCO</span> AV 2026</h1>
-    <div class="subtitle">CLASSIFICAÇÃO FINAL</div>
-    <div class="stats">
-      <div class="stat"><strong>10</strong><span>etapas realizadas</span></div>
-      <div class="stat"><strong>90</strong><span>participantes</span></div>
-      <div class="stat"><strong>49</strong><span>posições classificadas</span></div>
-    </div>
-    <div class="brand">ASSOCIAÇÃO VOLVO<small>LAZER • BEM-ESTAR • QUALIDADE DE VIDA</small></div>
-  </section>
+      <section class="slide" aria-labelledby="podium-title" hidden>
+        <div class="eyebrow">Ranking de Truco AV 2026</div>
+        <h2 id="podium-title">As 3 primeiras posições</h2>
+        <div class="podium" id="podium" aria-label="Pódio"></div>
+        <div class="footer"><span>TORNEIO DE TRUCO AV 2026</span><span>02 / 04</span></div>
+      </section>
 
-  <section class="slide">
-    <div class="eyebrow">Ranking de Truco AV 2026</div>
-    <h2>As 3 primeiras posições</h2>
-    <div class="podium">
-      <div class="card first">
-        <div class="medal">🥇</div><div class="rank">1º lugar</div>
-        <div class="name">Altevir Ferraz /<br>Rogério Kramar</div>
-        <div class="points">121 pontos</div>
-      </div>
-      <div class="card">
-        <div class="medal">🥈</div><div class="rank">2º lugar</div>
-        <div class="name">Alex Ribeiro</div>
-        <div class="points">116 pontos</div>
-      </div>
-      <div class="card">
-        <div class="medal">🥉</div><div class="rank">3º lugar</div>
-        <div class="name">Dilton Dybas /<br>Donizete Ribeiro de Jesus</div>
-        <div class="points">115 pontos</div>
-      </div>
-    </div>
-    <div class="footer"><span>TORNEIO DE TRUCO AV 2026</span><span>02 / 04</span></div>
-  </section>
+      <section class="slide" aria-labelledby="highlights-title" hidden>
+        <div class="eyebrow">Destaques da temporada</div>
+        <h2 id="highlights-title">Participantes premiados • 1º ao 6º lugar</h2>
+        <div class="six-grid" id="highlights"></div>
+        <div class="footer"><span>TORNEIO DE TRUCO AV 2026</span><span>03 / 04</span></div>
+      </section>
 
-  <section class="slide">
-    <div class="eyebrow">Destaques da temporada</div>
-    <h2>Participantes premiados • 1º ao 6º lugar</h2>
-    <div class="six-grid">
-      <div class="six-card"><div class="six-num">1º</div><div><div class="name">Altevir Ferraz / Rogério Kramar</div><div class="points">121 pontos</div></div></div>
-      <div class="six-card"><div class="six-num">2º</div><div><div class="name">Alex Ribeiro</div><div class="points">116 pontos</div></div></div>
-      <div class="six-card"><div class="six-num">3º</div><div><div class="name">Dilton Dybas / Donizete Ribeiro de Jesus</div><div class="points">115 pontos</div></div></div>
-      <div class="six-card"><div class="six-num">4º</div><div><div class="name">Genésio da Silva / Sergio Wambier</div><div class="points">114 pontos</div></div></div>
-      <div class="six-card"><div class="six-num">5º</div><div><div class="name">Adriano Lima</div><div class="points">109 pontos</div></div></div>
-      <div class="six-card"><div class="six-num">6º</div><div><div class="name">Clevinho</div><div class="points">107 pontos</div></div></div>
-    </div>
-    <div class="footer"><span>TORNEIO DE TRUCO AV 2026</span><span>03 / 04</span></div>
-  </section>
+      <section class="slide ranking-slide" aria-labelledby="ranking-title" hidden>
+        <div class="eyebrow eyebrow-centered">Após 10 etapas</div>
+        <h2 id="ranking-title">Classificação final</h2>
+        <div class="columns" id="columns" aria-label="Classificação completa"></div>
+        <div class="footer"><span>ASSOCIAÇÃO VOLVO • 2026</span><span>04 / 04</span></div>
+      </section>
+    </main>
 
-  <section class="slide ranking-slide">
-    <div class="eyebrow" style="text-align:center">Após 10 etapas</div>
-    <h2>Classificação final</h2>
-    <div class="columns" id="columns"></div>
-    <div class="footer"><span>ASSOCIAÇÃO VOLVO • 2026</span><span>04 / 04</span></div>
-  </section>
-</div>
-
-<div class="counter" id="counter">1 / 4</div>
-<div class="controls">
-  <button onclick="previous()">← Anterior</button>
-  <button onclick="next()">Próximo →</button>
-</div>
-
-<script>
-const groups = [
-[
-["1º","Altevir Ferraz / Rogério Kramar","121"],
-["2º","Alex Ribeiro","116"],
-["3º","Dilton Dybas / Donizete Ribeiro de Jesus","115"],
-["4º","Genésio da Silva / Sergio Wambier","114"],
-["5º","Adriano Lima","109"],
-["6º","Clevinho","107"],
-["7º","Adir / Eduardo das Neves","103"],
-["8º","Val","100"],
-["9º","Cláudio Sembai Junior / Dione Alcantara Barbosa / Gilmar Affonso","94"],
-["10º","Marcos","92"],
-["11º","Edson Machado / Tio Lu / Willian Pedrozo","89"],
-["12º","Marco Paiano","88"],
-["13º","Eliton / Thiago Carvalho","86"],
-["14º","Nei","81"],
-["15º","Matheus Clismam Correia Bittencourts / Thiago William Marques","78"],
-["16º","Paulo Cecilio","76"],
-["17º","Moisés Paulo Ramos dos Santos","75"]
-],
-[
-["18º","Osmar Soares","74"],
-["19º","Ruberigue Soares","70"],
-["20º","José Francisco","69"],
-["21º","Fabio Silva","64"],
-["22º","Giovanni Souza","62"],
-["23º","Neuzar / Ozélias","59"],
-["24º","Bruno Eduardo Muiol","58"],
-["25º","Carlos Roberto Carneiro dos Santos","56"],
-["26º","Adriano Ribeiro","53"],
-["27º","Nathali Veiga","51"],
-["28º","Babu","49"],
-["29º","Daniel","48"],
-["30º","Andressa / Celso Gil / Juninho / Rafael Boch","45"],
-["31º","Bruna Dias da Costa / Wellington Silva","39"],
-["32º","Luiz Furman","38"],
-["33º","Carlos Eduardo / Marcos Souza / Matheus Piazzolli","37"],
-["34º","Luiz Pinheiro / Rafael Soares","36"]
-],
-[
-["35º","Elder","32"],
-["36º","Cleverson (Tiozão)","30"],
-["37º","Rogério Oliveira","26"],
-["38º","Emerson Ribeiro","25"],
-["39º","Jefeferson Camargo","24"],
-["40º","Milena","22"],
-["41º","Eliseu Silveira / Emilio Rossot / Evellyn / Leandro Grendel","20"],
-["42º","Elywelton / Márcio Ferreira / Roberson Diego","19"],
-["43º","Jean Santana / Leandro Lopes / Thiago Constantino","18"],
-["44º","Julio Cezar Lopes / RODRIGO CARMARGO","16"],
-["45º","Bruno Wolf / JOSÉ OLIVEIRA / Manoel","14"],
-["46º","Mauricio da Silva","13"],
-["47º","Cézar (cezinha) / Jeferson Almeida","12"],
-["48º","Diogo dos Santos / Nilton Junior (Jota)","11"],
-["49º","Edson Muller / André / Gabriel Henrique / Jonathan Arte / Vagner Ferreira","10"]
-]
-];
-
-const root = document.getElementById("columns");
-groups.forEach((group, index) => {
-  const table = document.createElement("table");
-  table.className = "rank-table";
-  table.innerHTML = "<thead><tr><th>Pos.</th><th>Nome</th><th>Pts.</th></tr></thead>";
-  const body = document.createElement("tbody");
-  group.forEach(row => {
-    const tr = document.createElement("tr");
-    row.forEach(value => {
-      const td = document.createElement("td");
-      td.textContent = value;
-      tr.appendChild(td);
-    });
-    body.appendChild(tr);
-  });
-  table.appendChild(body);
-  const wrapper = document.createElement("div");
-  wrapper.appendChild(table);
-  if (index === 2) {
-    const extra = document.createElement("div");
-    extra.className = "unranked";
-    extra.innerHTML = "<b>Demais pontuações exibidas</b><br>" +
-      "Ocimar José Prestes / Rudi Pereira — 8 pts.<br>" +
-      "Max / Matheus Z. — 6 pts.<br>" +
-      "Eduardo Rondorf / Roberson Santiago — 5 pts.<br>" +
-      "Edsonilson / Eduardo Matucheski Filho / Enzo Camargo Teuber / João Pedro / Rafael Ferreira / Rodrigo Boaron / Sara / Thiago Cancelier / Wagner Domingues Ferreira / Weliton / Wesley — 4 pts.";
-    wrapper.appendChild(extra);
-  }
-  root.appendChild(wrapper);
-});
-
-let current = 0;
-const slides = [...document.querySelectorAll(".slide")];
-function show(index) {
-  current = (index + slides.length) % slides.length;
-  slides.forEach((slide, i) => slide.classList.toggle("active", i === current));
-  document.getElementById("counter").textContent = `${current + 1} / ${slides.length}`;
-}
-function next() { show(current + 1); }
-function previous() { show(current - 1); }
-document.addEventListener("keydown", event => {
-  if (event.key === "ArrowRight" || event.key === " ") next();
-  if (event.key === "ArrowLeft") previous();
-  if (event.key.toLowerCase() === "f") {
-    if (!document.fullscreenElement) document.documentElement.requestFullscreen();
-    else document.exitFullscreen();
-  }
-});
-</script>
-</body>
+    <div class="counter" id="counter" aria-live="polite" aria-atomic="true">1 / 4</div>
+    <nav class="controls" aria-label="Navegação dos slides">
+      <button type="button" id="previous" aria-label="Ir para o slide anterior">← Anterior</button>
+      <button type="button" id="next" aria-label="Ir para o próximo slide">Próximo →</button>
+    </nav>
+    <noscript>Ative o JavaScript para visualizar o ranking completo do torneio.</noscript>
+  </body>
 </html>
