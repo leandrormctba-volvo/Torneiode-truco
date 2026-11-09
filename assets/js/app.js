@@ -3,6 +3,7 @@
   const slides = Array.from(document.querySelectorAll(".slide"));
   const counter = document.getElementById("counter");
   let current = 0;
+  let touchStart = null;
 
   const positionLabel = (position) => `${position}º`;
 
@@ -125,12 +126,29 @@
       const isActive = slideIndex === current;
       slide.hidden = !isActive;
       slide.classList.toggle("active", isActive);
+      if (isActive) slide.scrollTop = 0;
     });
     counter.textContent = `${current + 1} / ${slides.length}`;
   }
 
   document.getElementById("previous").addEventListener("click", () => show(current - 1));
   document.getElementById("next").addEventListener("click", () => show(current + 1));
+
+  document.addEventListener("touchstart", (event) => {
+    if (event.touches.length !== 1) return;
+    const target = event.target;
+    if (target.closest("button, a, .controls")) return;
+    touchStart = { x: event.touches[0].clientX, y: event.touches[0].clientY };
+  }, { passive: true });
+
+  document.addEventListener("touchend", (event) => {
+    if (!touchStart || event.changedTouches.length !== 1) return;
+    const deltaX = event.changedTouches[0].clientX - touchStart.x;
+    const deltaY = event.changedTouches[0].clientY - touchStart.y;
+    touchStart = null;
+    if (Math.abs(deltaX) < 70 || Math.abs(deltaX) < Math.abs(deltaY) * 1.25) return;
+    show(current + (deltaX < 0 ? 1 : -1));
+  }, { passive: true });
 
   document.addEventListener("keydown", (event) => {
     if (event.altKey || event.ctrlKey || event.metaKey) return;

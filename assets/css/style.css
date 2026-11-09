@@ -23,6 +23,7 @@ body {
   display: grid;
   width: 100vw;
   height: 100vh;
+  height: 100dvh;
   place-items: center;
 }
 
@@ -157,6 +158,7 @@ h2 { margin: 0 0 2.3vh; font-size: clamp(26px, 3.2vw, 48px); }
 }
 .controls { position: fixed; right: 18px; bottom: 14px; z-index: 5; display: flex; gap: 8px; }
 button {
+  min-height: 40px;
   padding: 8px 14px;
   border: 1px solid #39749a;
   border-radius: 20px;
@@ -164,6 +166,7 @@ button {
   color: var(--white);
   cursor: pointer;
   font: inherit;
+  touch-action: manipulation;
 }
 button:hover { background: #174a70; }
 button:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
@@ -173,33 +176,85 @@ button:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
   .slide { width: 100vw; height: 56.25vw; }
 }
 
+/* Layouts for phones: keep navigation fixed while each slide can scroll independently. */
 @media (max-width: 700px) {
-  body { min-height: 100vh; overflow: auto; }
-  .deck { display: block; width: 100%; height: auto; min-height: 100vh; }
+  body { min-height: 100%; overflow: hidden; }
+  .deck { display: block; width: 100%; height: 100vh; height: 100dvh; }
   .slide, .slide.active {
     width: 100%;
-    height: auto;
-    min-height: 100vh;
-    padding: 10vh 6vw 90px;
-    overflow: visible;
+    height: 100vh;
+    height: 100dvh;
+    min-height: 0;
+    padding: max(28px, env(safe-area-inset-top)) 20px calc(88px + env(safe-area-inset-bottom));
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    border: 0;
+    border-radius: 0;
+    scrollbar-width: thin;
   }
+  .slide.active { display: flex; flex-direction: column; }
   .cover { justify-content: center; }
-  .cover h1 { font-size: clamp(42px, 12vw, 76px); }
-  .cover::after { right: 0; bottom: 0; font-size: 55vw; }
-  .stats { flex-wrap: wrap; gap: 18px; margin-top: 4vh; }
-  .stat { flex: 1 1 28%; padding-left: 10px; }
-  .stat span { display: block; font-size: 9px; }
-  .podium { grid-template-columns: 1fr; gap: 14px; }
-  .card, .card.first { min-height: 0; padding: 20px; }
-  .medal { font-size: 44px; }
-  .six-grid { grid-template-columns: 1fr; gap: 12px; }
-  .six-card { padding: 16px; }
-  .columns { grid-template-columns: 1fr; gap: 18px; }
-  .rank-table th, .rank-table td { padding: 8px 6px; font-size: 13px; }
-  .unranked { font-size: 12px; }
-  .footer { position: static; margin-top: 24px; font-size: 9px; }
-  .controls { right: 12px; bottom: 12px; }
-  .counter { bottom: 22px; left: 12px; }
+  .eyebrow { font-size: 11px; letter-spacing: .13em; }
+  h1 { margin: 20px 0 14px; font-size: clamp(42px, 12vw, 66px); line-height: 1; }
+  h2 { margin-bottom: 20px; font-size: clamp(25px, 7vw, 34px); line-height: 1.12; }
+  .subtitle { font-size: 14px; line-height: 1.5; }
+  .brand { margin-top: 42px; font-size: 13px; letter-spacing: .1em; }
+  .brand small { font-size: 9px; line-height: 1.5; }
+  .cover::after { right: -9%; bottom: -2%; font-size: 62vw; }
+
+  .stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 30px; }
+  .stat { min-width: 0; padding-left: 9px; }
+  .stat strong { font-size: clamp(24px, 8vw, 34px); }
+  .stat span { display: block; font-size: 9px; line-height: 1.35; }
+
+  .podium { grid-template-columns: 1fr; flex: initial; gap: 12px; align-items: stretch; }
+  .card, .card.first { min-height: 0; padding: 18px 16px; border-radius: 14px; }
+  .medal { margin-bottom: 8px; font-size: 42px; }
+  .rank { font-size: 21px; }
+  .card .name { margin: 10px 0; font-size: 17px; line-height: 1.35; }
+  .card .points { font-size: 17px; }
+
+  .six-grid { grid-template-columns: 1fr; flex: initial; gap: 10px; }
+  .six-card { min-height: 76px; gap: 14px; padding: 14px; border-radius: 12px; }
+  .six-num { min-width: 42px; font-size: 30px; }
+  .six-card .name { margin: 0 0 6px; font-size: 15px; line-height: 1.35; }
+  .six-card .points { font-size: 14px; }
+
+  .ranking-slide { padding-top: max(28px, env(safe-area-inset-top)); }
+  .ranking-slide h2 { margin-bottom: 18px; text-align: left; }
+  .eyebrow-centered { text-align: left; }
+  .columns { grid-template-columns: 1fr; flex: initial; gap: 16px; }
+  .rank-table th, .rank-table td { padding: 9px 8px; font-size: 13px; line-height: 1.3; }
+  .rank-table td:first-child, .rank-table th:first-child { width: 17%; }
+  .rank-table td:last-child, .rank-table th:last-child { width: 17%; }
+  .unranked { margin-top: 12px; font-size: 12px; line-height: 1.45; }
+  .unranked p { margin-bottom: 8px; }
+
+  .footer { position: static; gap: 12px; margin-top: 24px; padding-top: 14px; border-top: 1px solid #ffffff20; font-size: 9px; line-height: 1.4; }
+  .footer span:last-child { flex: 0 0 auto; }
+  .controls {
+    right: 0;
+    bottom: 0;
+    left: 0;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 10px 16px max(10px, env(safe-area-inset-bottom));
+    border-top: 1px solid #39749a;
+    background: #020d18f2;
+    backdrop-filter: blur(12px);
+  }
+  .controls button { min-height: 44px; padding: 10px 16px; font-size: 14px; }
+  .counter { bottom: auto; top: max(12px, env(safe-area-inset-top)); left: auto; right: 16px; z-index: 6; padding: 6px 10px; border: 1px solid #39749a; border-radius: 999px; background: #020d18d9; font-size: 12px; }
+}
+
+@media (max-width: 360px) {
+  .slide, .slide.active { padding-right: 16px; padding-left: 16px; }
+  .stats { gap: 6px; }
+  .stat { padding-left: 6px; }
+  .stat span { font-size: 8px; }
+  .controls { justify-content: center; padding-right: 8px; padding-left: 8px; }
+  .controls button { padding-right: 12px; padding-left: 12px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
